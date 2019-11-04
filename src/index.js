@@ -16,12 +16,12 @@ let count = 0;
 
 io.on("connection", socket => {
   console.log("New WebSocket connection");
-
   socket.emit("countUpdated", count);
 
   socket.on("increment", () => {
     count++;
-    socket.emit("countUpdated", count);
+    // socket.emit("countUpdated", count); //emits to single connection
+    io.emit("countUpdated", count); //emits to every single connection
   });
 });
 
