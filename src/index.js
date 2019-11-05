@@ -27,7 +27,10 @@ io.on("connection", socket => {
   });
 
   socket.on("sendLocation", coords => {
-    io.emit("message", `Location: ${coords.lat}, ${coords.long}`);
+    io.emit(
+      "message",
+      `https://google.com/maps?q=${coords.lat},${coords.long}`
+    );
   });
 });
 
