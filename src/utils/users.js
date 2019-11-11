@@ -2,7 +2,7 @@ const users = [];
 
 const addUser = ({ id, username, room }) => {
   // Clean the data
-  username = username.trim().toLowerCase();
+  username = username.trim();
   room = room.trim().toLowerCase();
 
   // Validate the data
@@ -14,7 +14,10 @@ const addUser = ({ id, username, room }) => {
 
   // Check for existing user
   const existingUser = users.find(user => {
-    return user.room === room && user.username === username;
+    return (
+      user.room === room &&
+      user.username.trim().toLowerCase() === username.trim().toLowerCase()
+    );
   });
   // Validate username
   if (existingUser) {
@@ -37,7 +40,7 @@ const removeUser = id => {
 };
 
 const getUser = id => {
-  return users.findIndex(user => user.id === id);
+  return users.find(user => user.id === id);
 };
 
 const getUsersInRoom = room => {

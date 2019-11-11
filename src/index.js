@@ -35,26 +35,34 @@ io.on("connection", socket => {
 
     socket.join(user.room);
 
-    socket.emit("message", generateMessage("Welcome"));
+    socket.emit("message", generateMessage("Admin", "Welcome"));
     socket.broadcast
       .to(user.room)
       .emit("message", generateMessage(`${user.username} has joined!`));
 
     callback();
-    //socket.emit, io.emit, socket.broadcast.emit, io.to.emit, socket.broacast.to.emit
   });
 
   socket.on("sendMessage", (message, callback) => {
+    const user = getUser(socket.id);
     const filter = new Filter();
 
     if (filter.isProfane(message)) {
       return callback("Profanity is not allowed");
     }
 
-    io.to("Mississauga").emit("message", generateMessage(message));
+    io.to(user.room).emit("message", generateMessage(user.username, message));
     callback();
   });
 
+  socket.on("sendLocation", (coords, callback) => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit(
+      "locationMessage",
+      generateLocationMessage(user.username, coords)
+    );
+    callback();
+  });
   socket.on("disconnect", () => {
     const user = removeUser(socket.id);
 
@@ -64,11 +72,6 @@ io.on("connection", socket => {
         generateMessage(`${user.username} has left!`)
       );
     }
-  });
-
-  socket.on("sendLocation", (coords, callback) => {
-    io.emit("locationMessage", generateLocationMessage(coords));
-    callback();
   });
 });
 
