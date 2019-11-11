@@ -3,23 +3,36 @@
   <head>
     <title>Chat App</title>
     <link rel="icon" href="/img/favicon.png" />
-    <link rel="stylesheet" href="/css/styles.min.css" />
+    <link rel="stylesheet" href="/build/tailwind.css" />
   </head>
   <body>
-    <div class="centered-form">
-      <div class="centered-form__box">
-        <h1>Join</h1>
+    <div class="flex justify-center h-auto">
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 self-center">
+        <h1 class="mb-4 font-semibold text-gray-700">Chat Application</h1>
         <form action="/chat.html">
-          <label>Display name</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2"
+            >Display name</label
+          >
           <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             name="username"
             placeholder="Enter display name"
             required
           />
-          <label>Room</label>
-          <input type="text" name="room" placeholder="Room name" required />
-          <button>Join</button>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Room</label>
+          <input
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            name="room"
+            placeholder="Room name"
+            required
+          />
+          <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Join
+          </button>
         </form>
       </div>
     </div>
