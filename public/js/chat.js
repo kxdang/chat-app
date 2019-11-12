@@ -13,7 +13,8 @@ const locationMessageTemplate = document.querySelector(
   "#location-message-template"
 ).innerHTML;
 const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
-
+const usertypingTemplate = document.querySelector("#usertype-template")
+  .innerHTML;
 //options
 const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true
@@ -36,14 +37,12 @@ const autoscroll = () => {
 
   //How far have I scrolled from the top of the container
   const scrollOffset = $messages.scrollTop + visibleHeight;
-  console.log("autoscroll");
   if (containerHeight - newMessageHeight <= scrollOffset) {
     $messages.scrollTop = $messages.scrollHeight; //this will push us all the way down to the bottom
   }
 };
 
 socket.on("message", message => {
-  console.log(message);
   const html = Mustache.render(messageTemplate, {
     username: message.username,
     message: message.text,
@@ -54,7 +53,6 @@ socket.on("message", message => {
 });
 
 socket.on("locationMessage", url => {
-  console.log(url.username);
   const html = Mustache.render(locationMessageTemplate, {
     username: url.username,
     url,
@@ -69,14 +67,11 @@ socket.on("roomData", ({ room, users }) => {
   document.querySelector("#sidebar").innerHTML = html;
 });
 
-socket.on("locationMessage", url => {
-  console.log(url);
-});
+socket.on("locationMessage", url => {});
 
 $messageForm.addEventListener("submit", e => {
   e.preventDefault();
   $messageFormButton.setAttribute("disabled", "disabled");
-
   const message = e.target.elements.message.value;
 
   socket.emit("sendMessage", message, error => {
@@ -85,10 +80,39 @@ $messageForm.addEventListener("submit", e => {
     $messageFormInput.focus();
 
     if (error) {
-      return console.log(error);
+      return window.alert(error);
     }
     console.log("Message delivered!");
+    socket.emit("userDoneTyping");
   });
+});
+
+//emits an event called userTyping every time someone types
+$messageFormInput.addEventListener("keydown", () => {
+  socket.emit("userTyping");
+});
+
+//emits an event called userDoneTyping every time someone finishes typing
+$messageFormInput.addEventListener("keyup", () => {
+  function timeOutDoneTyping() {
+    return socket.emit("userDoneTyping");
+  }
+
+  setTimeout(timeOutDoneTyping, 1500);
+});
+//chat listens to the server for this event and runs a function
+socket.on("userTyping", username => {
+  const html = Mustache.render(usertypingTemplate, { username });
+  document.querySelector("#userTyping").innerHTML = html;
+  console.log(`${username} is typing`);
+});
+
+//chat listens to the server for when user is done typing
+socket.on("userDoneTyping", username => {
+  username = " ";
+  const html = Mustache.render(usertypingTemplate, { username });
+  document.querySelector("#userTyping").innerHTML = " ";
+  console.log(`${username} is done typing`);
 });
 
 $sendLocationButton.addEventListener("click", () => {

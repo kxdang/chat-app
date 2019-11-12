@@ -14,7 +14,17 @@ const generateLocationMessage = (username, coords) => {
   };
 };
 
+const userTyping = username => {
+  return `${username}... is typing`;
+};
+
+const userDoneTyping = clearMessage => {
+  return "";
+};
+
 module.exports = {
   generateMessage,
-  generateLocationMessage
+  generateLocationMessage,
+  userTyping,
+  userDoneTyping
 };

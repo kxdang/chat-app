@@ -5,7 +5,9 @@ const socketio = require("socket.io");
 const Filter = require("bad-words");
 const {
   generateMessage,
-  generateLocationMessage
+  generateLocationMessage,
+  userTyping,
+  userDoneTyping
 } = require("./utils/messages");
 const {
   addUser,
@@ -35,7 +37,10 @@ io.on("connection", socket => {
 
     socket.join(user.room);
 
-    socket.emit("message", generateMessage("Admin", "Welcome"));
+    socket.emit(
+      "message",
+      generateMessage("Admin", `Welcome to ${user.room} room!`)
+    );
     socket.broadcast
       .to(user.room)
       .emit("message", generateMessage(`${user.username} has joined!`));
@@ -56,6 +61,18 @@ io.on("connection", socket => {
 
     io.to(user.room).emit("message", generateMessage(user.username, message));
     callback();
+  });
+
+  //Server listens to an event called user typing and then sends out an emit to room with a function back to chat
+  socket.on("userTyping", currentName => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit("userTyping", userTyping(user.username));
+  });
+
+  socket.on("userDoneTyping", () => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit("userDoneTyping", userDoneTyping());
+    console.log(`finished typing`);
   });
 
   socket.on("sendLocation", (coords, callback) => {
